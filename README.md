@@ -2,13 +2,13 @@
 
 [VECRO](https://github.com/deemru/vecro) stands for a **v**erifiable **e**lliptic **c**urve **r**andom **o**racle.
 
-VECRO allows to produce [unique, collision resistant and fully pseudorandom](https://tools.ietf.org/html/draft-irtf-cfrg-vrf-03#page-10) numbers based on client's data. These numbers can be easily verified as regular ECDSA signatures.
+VECRO allows to produce [unique, collision resistant and fully pseudorandom](https://tools.ietf.org/html/draft-irtf-cfrg-vrf-03#page-10) numbers based on client's data. These numbers can be easily verified as regular EdDSA signatures.
 
 ## Basics
 
-[ECDSA](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm) signature consists of `R` and `S` values, where `R` represents a nonce and `S` represents a signature, the `R, S` pair proofs that a message is signed by a private key. This can be verified by a corresponding public key at any time.
+[EdDSA](https://en.wikipedia.org/wiki/EdDSA) signature consists of `R` and `S` values, where `R` represents a nonce and `S` represents a signature, the `R, S` pair proofs that a message is signed by a private key. This can be verified by a corresponding public key at any time.
 
-ECDSA has a problem when used as a source for a [random oracle](https://en.wikipedia.org/wiki/Random_oracle), because it can generate an infinite number of valid signatures for one message, so an oracle on this method can easily manipulate a final result. `R` value must be unique every time and even if `R` is fixed and based on a message input, there is no garantees that the oracle does not manipulate the value of `R`, otherwise, his private key is compromised.
+EdDSA has a problem when used as a source for a [random oracle](https://en.wikipedia.org/wiki/Random_oracle), because it can generate an infinite number of valid signatures for one message, so an oracle on this method can easily manipulate a final result. `R` value must be unique every time and even if `R` is fixed and based on a message input, there is no garantees that the oracle does not manipulate the value of `R`, otherwise, his private key is compromised.
 
 VECRO defines a mechanism in which `R` value fixates before a signature generation, so for one message and fixed `R` there is only one `S` value, which can then be used as verifiable random number, because there is no room for manipulations.
 

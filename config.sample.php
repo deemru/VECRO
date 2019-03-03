@@ -70,12 +70,12 @@ function initVECRO( $wk, $alias, $aliasInit, $aliasRandom, $assetInitName, $asse
             {
                 if( $issueTx['name'] === $assetInitName )
                 {
-                    $assetInit = $issueTx['id'];
+                    $assetInit = $asset;
                     $wk->log( 's', "$assetInitName = $assetInit" );
                 }
                 elseif( $issueTx['name'] === $assetRandomName )
                 {
-                    $assetRandom = $issueTx['id'];
+                    $assetRandom = $asset;
                     $wk->log( 's', "$assetRandomName = $assetRandom" );
                 }
             }
@@ -110,10 +110,7 @@ function initVECRO( $wk, $alias, $aliasInit, $aliasRandom, $assetInitName, $asse
     {
         $script = sprintf( $script, $aliasInit, $aliasRandom, $assetInit, $assetRandom );
         if( false === ( $script = $wk->compile( $script ) ) )
-        {
-            $canProceed = false;
-            $wk->log( 'e', "compile failed" );
-        }
+            exit( $wk->log( 'e', "compile failed" ) );
 
         $tx = $wk->txSetScript( $script['script'] );
         $tx['fee'] = $wk->calculateFee( $tx );

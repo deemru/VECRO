@@ -279,7 +279,7 @@ class VECRO
                             $this->wk->log( 'w', "done ($qtxid) userStr !== used ($asset)" );
                     }
                     if( false === $this->used->setKeyValue( $R, $userStr, 's' ) )
-                        $this->error( "done ($txid) setKeyValue failed" );
+                        $this->error( "done ($qtxid) setKeyValue failed" );
                 }
             }
             $this->db->commit();
@@ -299,7 +299,6 @@ class VECRO
 
                 $sender = $tx['sender'];
                 $recipient = $tx['recipient'];
-                $assetId = $tx['assetId'];
 
                 if( $recipient === $this->aliasInit || $recipient === $this->aliasRandom )
                     $this->queue( $tx );

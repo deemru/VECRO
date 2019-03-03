@@ -1,0 +1,97 @@
+# config
+let vecroPublicKey = tx.senderPublicKey
+let triggerMinCost = 500000
+let triggerMaxCost = 100000000
+let aliasInit = Alias( "%s" )
+let aliasRandom = Alias( "%s" )
+let assetInit = base58'%s'
+let assetRandom = base58'%s'
+let codeR = toBytes( "R" )
+let codeS = toBytes( "S" )
+let codeSize = 45
+
+# proofs indexes
+let iSig = 0
+let iRaw = 1
+let iTrig = 2
+let iInit = 3
+
+match( tx ) {
+    case thisTx:TransferTransaction =>
+        match( transactionById( thisTx.proofs[iTrig] ) ) {
+            case triggerTx:TransferTransaction =>
+                # init ~ R
+                if( triggerTx.recipient == aliasInit ) then
+                {
+                    let initTx = thisTx
+                    let triggerInitTx = triggerTx;
+
+                    let initTxbodyBytes = initTx.bodyBytes + initTx.proofs[iTrig]              
+                    let R = initTx.proofs[iRaw]
+
+                    !isDefined( triggerInitTx.assetId ) &&
+                    triggerInitTx.amount >= triggerMinCost &&
+                    triggerInitTx.sender == initTx.recipient &&
+                    !isDefined( initTx.feeAssetId ) &&
+                    ( initTx.fee == triggerMaxCost || initTx.fee == triggerInitTx.amount ) &&
+                    initTx.assetId == assetInit &&
+                    initTx.amount == 1 &&
+                    size( initTx.attachment ) == codeSize &&
+                    initTx.attachment == toBytes( toBase58String( codeR + R ) ) &&
+                    sigVerify( initTxbodyBytes, initTx.proofs[iSig], vecroPublicKey )
+                }
+                else
+                # random ~ S
+                if( triggerTx.recipient == aliasRandom ) then
+                    match( transactionById( thisTx.proofs[iInit] ) ) {
+                        case initTx:TransferTransaction =>
+                            match( transactionById( initTx.proofs[iTrig] ) ) {
+                                case triggerInitTx:TransferTransaction =>
+                                    if( triggerInitTx.recipient == aliasInit ) then
+                                    {
+                                        let randomTx = thisTx
+                                        let triggerRandomTx = triggerTx
+
+                                        let initTxbodyBytes = initTx.bodyBytes + initTx.proofs[iTrig]
+                                        let randomTxbodyBytes = randomTx.bodyBytes + randomTx.proofs[iTrig] + randomTx.proofs[iInit]
+                                        let R = initTx.proofs[iRaw]
+                                        let S = thisTx.proofs[iRaw]
+                                        let sig = R + S
+                                        let msg = triggerRandomTx.attachment
+
+                                        triggerRandomTx.sender == triggerInitTx.sender &&
+                                        take( msg, codeSize ) == initTx.attachment &&
+                                        sigVerify( msg, sig, vecroPublicKey ) &&
+
+                                        !isDefined( triggerRandomTx.assetId ) &&
+                                        triggerRandomTx.amount >= triggerMinCost &&
+                                        triggerRandomTx.sender == randomTx.recipient &&
+                                        !isDefined( randomTx.feeAssetId ) &&
+                                        ( randomTx.fee == triggerMaxCost || randomTx.fee == triggerRandomTx.amount ) &&
+                                        randomTx.assetId == assetRandom &&
+                                        randomTx.amount == 1 &&
+                                        size( randomTx.attachment ) == codeSize &&
+                                        randomTx.attachment == toBytes( toBase58String( codeS + S ) ) &&
+                                        sigVerify( randomTxbodyBytes, randomTx.proofs[iSig], vecroPublicKey ) &&
+
+                                        !isDefined( triggerInitTx.assetId ) &&
+                                        triggerInitTx.amount >= triggerMinCost &&
+                                        triggerInitTx.sender == initTx.recipient &&
+                                        !isDefined( initTx.feeAssetId ) &&
+                                        ( initTx.fee == triggerMaxCost || initTx.fee == triggerInitTx.amount ) &&
+                                        initTx.assetId == assetInit &&
+                                        initTx.amount == 1 &&
+                                        size( initTx.attachment ) == codeSize &&
+                                        initTx.attachment == toBytes( toBase58String( codeR + R ) ) &&
+                                        sigVerify( initTxbodyBytes, initTx.proofs[iSig], vecroPublicKey )
+                                    }
+                                    else false
+                                case _ => false
+                            }
+                        case _ => false
+                    }
+                else false
+            case _ => false
+        }
+    case _ => sigVerify( tx.bodyBytes, tx.proofs[iSig], vecroPublicKey )
+}

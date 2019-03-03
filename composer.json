@@ -1,0 +1,7 @@
+{
+    "minimum-stability": "dev",
+    "require": {
+        "deemru/waveskit": "1.0.*",
+        "deemru/pairs": "1.0.*"
+    }
+}

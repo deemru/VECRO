@@ -75,7 +75,13 @@ class VECRO
     public function run()
     {
         $this->prepare();
-        $this->wk->txMonitor( function( $wk, $refreshed, $newTransactions ){ return $this->proc( $wk, $refreshed, $newTransactions ); } );
+        for( ;; )
+        {
+            $this->wk->txMonitor( function( $wk, $refreshed, $newTransactions ){ return $this->proc( $wk, $refreshed, $newTransactions ); } );
+            $this->wk->log( 'w', 'txMonitor exited' );
+            $this->wk->log( 'i', 'retrying...' );
+            sleep( 1 );
+        }
     }
 
     private function RS( $triggerInitTx, $msg = null )

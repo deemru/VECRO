@@ -119,12 +119,12 @@ function initVECRO( $wk, $alias, $aliasInit, $aliasRandom, $assetInitName, $asse
         if( false === ( $script = $wk->compile( $script ) ) )
             exit( $wk->log( 'e', "compile failed" ) );
 
-        $tx = $wk->txSetScript( $script['script'] );
+        $tx = $wk->txAddressScript( $script['script'] );
         $tx['fee'] = $wk->calculateFee( $tx );
         $tx = $wk->txSign( $tx );
         $tx = $wk->txBroadcast( $tx );
         if( $tx === false )
-            exit( $wk->log( 'e', 'txSetScript' ) );
+            exit( $wk->log( 'e', 'txAddressScript' ) );
         $wk->log( 's', "script = {$tx['id']}" );
     }
 

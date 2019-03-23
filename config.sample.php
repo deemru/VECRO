@@ -16,15 +16,22 @@ $assetRandomName = "S-$alias";
 //$assetInit = '21eV9L5qsU2H1jwCbDSkzWUuFyYvfNFaycSjLYPaZLHD';
 //$assetRandom = '7ZFZjR18tF1gdmN73oKbMo9FSWLrAz6ocDMXsd13v5oJ';
 
-$mainNode = 'https://testnode4.wavesnodes.com';
-$backupNodes = [ 'https://testnode4.wavesnodes.com', 'https://testnode4.wavesnodes.com' ];
+$nodes =
+[
+    'https://testnode1.wavesnodes.com',
+    'https://testnode2.wavesnodes.com',
+    'https://testnode3.wavesnodes.com',
+    'https://testnode4.wavesnodes.com',
+];
 
 define( 'IREALLYKNOWWHAT_RSEED_MEANS', true );
 
 $wk = new WavesKit( $chainId );
-$wk->setNodeAddress( $mainNode, 1, $backupNodes );
+$wk->setNodeAddress( $nodes[0], 1, array_slice( $nodes, 1 ) );
 $wk->setSeed( $seed );
 $wk->log( 's', 'VECRO @ ' . $wk->getAddress() );
+$wk->setBestNode();
+$wk->log( 'i', 'best node = ' . $wk->getNodeAddress() );
 
 if( !isset( $assetInit ) || !isset( $assetRandom ) )
 {

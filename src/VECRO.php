@@ -371,7 +371,7 @@ class VECRO
             $this->db->commit();
         }
 
-        return 30;
+        return defined( 'VECRO_RECHECK_INTERVAL') ? VECRO_RECHECK_INTERVAL : 30;
     }
 
     private function getQueue()

@@ -18,6 +18,11 @@ let iInit = 3
 
 match( tx ) {
     case thisTx:TransferTransaction =>
+        # skip all except assetInit and assetRandom
+        if !isDefined( thisTx.assetId ) || ( thisTx.assetId != assetInit && thisTx.assetId != assetRandom )
+            then sigVerify( tx.bodyBytes, tx.proofs[iSig], vecroPublicKey )
+        else
+        # init or random
         match( transactionById( thisTx.proofs[iTrig] ) ) {
             case triggerTx:TransferTransaction =>
                 # init ~ R
@@ -93,5 +98,5 @@ match( tx ) {
                 else false
             case _ => false
         }
-    case _ => sigVerify( tx.bodyBytes, tx.proofs[iSig], vecroPublicKey )
+    case _ => false
 }

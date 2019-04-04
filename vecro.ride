@@ -98,5 +98,6 @@ match( tx ) {
                 else false
             case _ => false
         }
+    case dataTx:DataTransaction => sigVerify( tx.bodyBytes, tx.proofs[iSig], vecroPublicKey )
     case _ => false
 }

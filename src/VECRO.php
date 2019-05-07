@@ -217,7 +217,7 @@ class VECRO
         }
         if( false !== ( $qtxdone = $this->done->getValue( $rawid, 'j' ) ) )
         {
-            $doneId = $qtxdone['status']['id'];
+            $doneId = isset( $qtxdone['status']['id'] ) ? $qtxdone['status']['id'] : $qtxdone['status'];
             $this->wk->log( 'w', "queue ($qtxid) already in done ($doneId)" );
             return;
         }
